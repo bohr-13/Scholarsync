@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { CloudUpload, FileText, Image, X, File, Camera, Clipboard, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -36,7 +36,6 @@ export default function UploadZone({ onFileSelect }: UploadZoneProps) {
   const [showDropBounce, setShowDropBounce] = useState(false);
   const [pasteToast, setPasteToast] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // ── Handle file selection (shared by drop, browse, paste) ──
   const handleFile = useCallback(
@@ -116,7 +115,6 @@ export default function UploadZone({ onFileSelect }: UploadZoneProps) {
   };
 
   // ── Floating icon animation values ──
-  const floatY = useMotionValue(0);
 
   return (
     <div className="w-full relative" ref={containerRef}>

@@ -23,6 +23,175 @@ interface ScholarshipCardProps {
   showSaveButton?: boolean;
 }
 
+const ScholarshipHeader = ({
+  scholarship,
+  isSaved,
+  onToggleSave,
+  showSaveButton
+}: {
+  scholarship: Scholarship;
+  isSaved: boolean;
+  onToggleSave?: () => void;
+  showSaveButton: boolean;
+}) => (
+  <div className="flex items-start justify-between gap-3 mb-4 relative z-10">
+    <div className="flex-1 min-w-0">
+      <h3 className="text-sm font-bold text-slate-100 leading-snug mb-1.5 line-clamp-2 group-hover:text-blue-300 transition-colors">
+        {scholarship.name}
+      </h3>
+      <div className="flex items-center gap-1.5 text-xs text-slate-400">
+        <Building2 className="w-3 h-3 flex-shrink-0 text-violet-400" />
+        <span className="truncate">{scholarship.provider}</span>
+      </div>
+    </div>
+
+    <div className="flex flex-col items-end gap-2 flex-shrink-0">
+      {/* Amount badge */}
+      <span className="inline-block px-3 py-1.5 rounded-lg text-xs font-black bg-gradient-to-r from-blue-500/20 to-indigo-500/20 border border-blue-500/30 text-blue-300 shadow-[0_0_15px_rgba(59,130,246,0.1)]">
+        {scholarship.amount}
+      </span>
+
+      {/* Bookmark Button */}
+      {showSaveButton && onToggleSave && (
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onToggleSave();
+          }}
+          className={cn(
+            "p-1.5 rounded-lg border text-slate-400 transition-all duration-300",
+            isSaved
+              ? "bg-violet-500/20 border-violet-500/40 text-violet-300 shadow-[0_0_10px_rgba(139,92,246,0.2)]"
+              : "bg-white/[0.02] border-white/[0.08] hover:border-slate-500 hover:text-slate-200"
+          )}
+          title={isSaved ? "Unsave Scholarship" : "Save Scholarship"}
+        >
+          <Bookmark className={cn("w-3.5 h-3.5", isSaved && "fill-current")} />
+        </button>
+      )}
+    </div>
+  </div>
+);
+
+const ScholarshipUrgencyBadge = ({
+  deadline,
+  urgency,
+  urgencyConfig
+}: {
+  deadline: string;
+  urgency: 'critical' | 'soon' | 'comfortable';
+  urgencyConfig: Record<'critical' | 'soon' | 'comfortable', { color: string; bg: string }>;
+}) => (
+  <div className={cn(
+    'flex items-center gap-2 px-3 py-2 rounded-lg border mb-4 relative z-10 transition-all duration-300',
+    urgencyConfig[urgency].bg
+  )}>
+    <Clock className={cn('w-3.5 h-3.5 animate-pulse', urgencyConfig[urgency].color)} />
+    <span className={cn('text-xs font-semibold', urgencyConfig[urgency].color)}>
+      {formatRelativeDate(deadline)}
+    </span>
+    <span className="text-xs text-slate-500 ml-auto">
+      {formatDate(deadline)}
+    </span>
+  </div>
+);
+
+const ScholarshipTags = ({ tags }: { tags?: string[] }) => {
+  if (!tags || tags.length === 0) return null;
+  return (
+    <div className="flex flex-wrap gap-1.5 mb-4 relative z-10">
+      {tags.map((tag) => (
+        <span
+          key={tag}
+          className="px-2 py-0.5 rounded-md bg-blue-500/10 border border-blue-500/20 text-[10px] font-medium text-blue-300 hover:bg-blue-500/20 transition-colors"
+        >
+          #{tag}
+        </span>
+      ))}
+    </div>
+  );
+};
+
+const ScholarshipEligibility = ({ eligibility }: { eligibility: Scholarship['eligibility'] }) => (
+  <div className="space-y-2 mb-4 relative z-10">
+    <p className="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Eligibility</p>
+    <div className="flex flex-wrap gap-1.5">
+      {eligibility.categories.map((cat) => (
+        <span
+          key={cat}
+          className="px-2 py-0.5 rounded-md bg-violet-500/10 border border-violet-500/20 text-[10px] font-medium text-violet-300"
+        >
+          {cat}
+        </span>
+      ))}
+      {eligibility.gender !== 'all' && (
+        <span className="px-2 py-0.5 rounded-md bg-pink-500/10 border border-pink-500/20 text-[10px] font-medium text-pink-300 capitalize">
+          {eligibility.gender}
+        </span>
+      )}
+      {eligibility.states.map((state) => (
+        <span
+          key={state}
+          className="px-2 py-0.5 rounded-md bg-cyan-500/10 border border-cyan-500/20 text-[10px] font-medium text-cyan-300"
+        >
+          {state}
+        </span>
+      ))}
+    </div>
+    {eligibility.incomeLimit && (
+      <p className="text-[11px] text-slate-400">
+        Income Limit: <span className="text-slate-300 font-medium">{eligibility.incomeLimit}</span>
+      </p>
+    )}
+  </div>
+);
+
+const ScholarshipDocuments = ({ documents }: { documents?: string[] }) => {
+  if (!documents || documents.length === 0) return null;
+  return (
+    <div className="mb-5 relative z-10">
+      <p className="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-2">Documents</p>
+      <div className="flex flex-wrap gap-1.5">
+        {documents.slice(0, 3).map((doc) => (
+          <span
+            key={doc}
+            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-white/[0.03] border border-white/[0.06] text-[10px] text-slate-400"
+          >
+            <FileText className="w-2.5 h-2.5 text-slate-500" />
+            <span className="truncate max-w-[120px]">{doc}</span>
+          </span>
+        ))}
+        {documents.length > 3 && (
+          <span className="px-2 py-0.5 rounded-md bg-white/[0.03] border border-white/[0.06] text-[10px] text-slate-500 font-medium">
+            +{documents.length - 3} more
+          </span>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const ScholarshipMatch = ({ matchPercentage }: { matchPercentage?: number }) => {
+  if (matchPercentage === undefined) return null;
+  return (
+    <div className="mb-5 relative z-10 bg-emerald-500/5 border border-emerald-500/10 rounded-xl p-2.5">
+      <div className="flex items-center justify-between mb-1.5">
+        <p className="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Eligibility Match</p>
+        <p className="text-xs font-black text-emerald-400">{matchPercentage}%</p>
+      </div>
+      <div className="w-full h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
+        <motion.div
+          className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-400"
+          initial={{ width: 0 }}
+          animate={{ width: `${matchPercentage}%` }}
+          transition={{ duration: 1, delay: 0.3, ease: 'easeOut' }}
+        />
+      </div>
+    </div>
+  );
+};
+
 export default function ScholarshipCard({
   scholarship,
   index = 0,
@@ -58,59 +227,18 @@ export default function ScholarshipCard({
         <div className="absolute -inset-px bg-gradient-to-r from-blue-500/10 to-violet-500/10 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
         <div>
-          {/* Header */}
-          <div className="flex items-start justify-between gap-3 mb-4 relative z-10">
-            <div className="flex-1 min-w-0">
-              <h3 className="text-sm font-bold text-slate-100 leading-snug mb-1.5 line-clamp-2 group-hover:text-blue-300 transition-colors">
-                {scholarship.name}
-              </h3>
-              <div className="flex items-center gap-1.5 text-xs text-slate-400">
-                <Building2 className="w-3 h-3 flex-shrink-0 text-violet-400" />
-                <span className="truncate">{scholarship.provider}</span>
-              </div>
-            </div>
+          <ScholarshipHeader
+            scholarship={scholarship}
+            isSaved={isSaved}
+            onToggleSave={onToggleSave}
+            showSaveButton={showSaveButton}
+          />
 
-            <div className="flex flex-col items-end gap-2 flex-shrink-0">
-              {/* Amount badge */}
-              <span className="inline-block px-3 py-1.5 rounded-lg text-xs font-black bg-gradient-to-r from-blue-500/20 to-indigo-500/20 border border-blue-500/30 text-blue-300 shadow-[0_0_15px_rgba(59,130,246,0.1)]">
-                {scholarship.amount}
-              </span>
-
-              {/* Bookmark Button */}
-              {showSaveButton && onToggleSave && (
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    onToggleSave();
-                  }}
-                  className={cn(
-                    "p-1.5 rounded-lg border text-slate-400 transition-all duration-300",
-                    isSaved
-                      ? "bg-violet-500/20 border-violet-500/40 text-violet-300 shadow-[0_0_10px_rgba(139,92,246,0.2)]"
-                      : "bg-white/[0.02] border-white/[0.08] hover:border-slate-500 hover:text-slate-200"
-                  )}
-                  title={isSaved ? "Unsave Scholarship" : "Save Scholarship"}
-                >
-                  <Bookmark className={cn("w-3.5 h-3.5", isSaved && "fill-current")} />
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Urgency / Deadline Badge */}
-          <div className={cn(
-            'flex items-center gap-2 px-3 py-2 rounded-lg border mb-4 relative z-10 transition-all duration-300',
-            urgencyConfig[urgency].bg
-          )}>
-            <Clock className={cn('w-3.5 h-3.5 animate-pulse', urgencyConfig[urgency].color)} />
-            <span className={cn('text-xs font-semibold', urgencyConfig[urgency].color)}>
-              {formatRelativeDate(scholarship.deadline)}
-            </span>
-            <span className="text-xs text-slate-500 ml-auto">
-              {formatDate(scholarship.deadline)}
-            </span>
-          </div>
+          <ScholarshipUrgencyBadge
+            deadline={scholarship.deadline}
+            urgency={urgency}
+            urgencyConfig={urgencyConfig}
+          />
 
           {/* Description */}
           {scholarship.description && (
@@ -119,93 +247,13 @@ export default function ScholarshipCard({
             </p>
           )}
 
-          {/* Tags */}
-          {scholarship.tags && scholarship.tags.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 mb-4 relative z-10">
-              {scholarship.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="px-2 py-0.5 rounded-md bg-blue-500/10 border border-blue-500/20 text-[10px] font-medium text-blue-300 hover:bg-blue-500/20 transition-colors"
-                >
-                  #{tag}
-                </span>
-              ))}
-            </div>
-          )}
+          <ScholarshipTags tags={scholarship.tags} />
 
-          {/* Eligibility summary */}
-          <div className="space-y-2 mb-4 relative z-10">
-            <p className="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Eligibility</p>
-            <div className="flex flex-wrap gap-1.5">
-              {scholarship.eligibility.categories.map((cat) => (
-                <span
-                  key={cat}
-                  className="px-2 py-0.5 rounded-md bg-violet-500/10 border border-violet-500/20 text-[10px] font-medium text-violet-300"
-                >
-                  {cat}
-                </span>
-              ))}
-              {scholarship.eligibility.gender !== 'all' && (
-                <span className="px-2 py-0.5 rounded-md bg-pink-500/10 border border-pink-500/20 text-[10px] font-medium text-pink-300 capitalize">
-                  {scholarship.eligibility.gender}
-                </span>
-              )}
-              {scholarship.eligibility.states.map((state) => (
-                <span
-                  key={state}
-                  className="px-2 py-0.5 rounded-md bg-cyan-500/10 border border-cyan-500/20 text-[10px] font-medium text-cyan-300"
-                >
-                  {state}
-                </span>
-              ))}
-            </div>
-            {scholarship.eligibility.incomeLimit && (
-              <p className="text-[11px] text-slate-400">
-                Income Limit: <span className="text-slate-300 font-medium">{scholarship.eligibility.incomeLimit}</span>
-              </p>
-            )}
-          </div>
+          <ScholarshipEligibility eligibility={scholarship.eligibility} />
 
-          {/* Required Documents */}
-          {scholarship.requiredDocuments && scholarship.requiredDocuments.length > 0 && (
-            <div className="mb-5 relative z-10">
-              <p className="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-2">Documents</p>
-              <div className="flex flex-wrap gap-1.5">
-                {scholarship.requiredDocuments.slice(0, 3).map((doc) => (
-                  <span
-                    key={doc}
-                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-white/[0.03] border border-white/[0.06] text-[10px] text-slate-400"
-                  >
-                    <FileText className="w-2.5 h-2.5 text-slate-500" />
-                    <span className="truncate max-w-[120px]">{doc}</span>
-                  </span>
-                ))}
-                {scholarship.requiredDocuments.length > 3 && (
-                  <span className="px-2 py-0.5 rounded-md bg-white/[0.03] border border-white/[0.06] text-[10px] text-slate-500 font-medium">
-                    +{scholarship.requiredDocuments.length - 3} more
-                  </span>
-                )}
-              </div>
-            </div>
-          )}
+          <ScholarshipDocuments documents={scholarship.requiredDocuments} />
 
-          {/* Match percentage */}
-          {scholarship.matchPercentage !== undefined && (
-            <div className="mb-5 relative z-10 bg-emerald-500/5 border border-emerald-500/10 rounded-xl p-2.5">
-              <div className="flex items-center justify-between mb-1.5">
-                <p className="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Eligibility Match</p>
-                <p className="text-xs font-black text-emerald-400">{scholarship.matchPercentage}%</p>
-              </div>
-              <div className="w-full h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
-                <motion.div
-                  className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-400"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${scholarship.matchPercentage}%` }}
-                  transition={{ duration: 1, delay: 0.3, ease: 'easeOut' }}
-                />
-              </div>
-            </div>
-          )}
+          <ScholarshipMatch matchPercentage={scholarship.matchPercentage} />
         </div>
 
         {/* Apply button */}

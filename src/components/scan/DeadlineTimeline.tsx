@@ -90,6 +90,128 @@ const nodeVariants = {
   },
 };
 
+function MainDeadlineNode({
+  deadline,
+  deadlineColors,
+  deadlineLabel
+}: {
+  deadline: string;
+  deadlineColors: { dot: string; glow: string; text: string };
+  deadlineLabel: string;
+}) {
+  return (
+    <motion.div variants={nodeVariants} className="relative flex items-start gap-4 pb-6">
+      {/* Dot */}
+      <div className="absolute -left-8 top-1 flex items-center justify-center">
+        <motion.div
+          className={cn('w-6 h-6 rounded-full flex items-center justify-center', deadlineColors.dot)}
+          animate={{
+            scale: [1, 1.25, 1],
+            opacity: [0.8, 1, 0.8],
+          }}
+          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+          style={{
+            boxShadow: `0 0 12px 2px`,
+          }}
+        >
+          <Calendar className="w-3 h-3 text-white" />
+        </motion.div>
+      </div>
+
+      {/* Card */}
+      <div
+        className={cn(
+          'flex-1 rounded-xl border border-white/[0.06] bg-white/[0.03] backdrop-blur-sm p-4',
+          'shadow-lg'
+        )}
+      >
+        <div className="flex items-center gap-2 mb-1">
+          <span className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">
+            Main Deadline
+          </span>
+        </div>
+        <p className={cn('text-sm font-semibold', deadlineColors.text)}>
+          {formatRelativeDate(deadline)}
+        </p>
+        <div className="flex items-center gap-1.5 mt-1.5">
+          <Clock className="w-3 h-3 text-slate-500" />
+          <p className="text-xs text-slate-400">{deadlineLabel}</p>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function TaskCardNode({ task, index }: { task: TaskCard; index: number }) {
+  const config = TYPE_CONFIG[task.type] ?? TYPE_CONFIG.verification;
+
+  return (
+    <motion.div
+      variants={nodeVariants}
+      className="relative flex items-start gap-4 pb-5 last:pb-0"
+    >
+      {/* Dot */}
+      <div className="absolute -left-8 top-1.5 flex items-center justify-center">
+        <motion.div
+          className={cn('w-5 h-5 rounded-full flex items-center justify-center', config.bg, 'border', config.border)}
+          animate={{
+            opacity: [0.7, 1, 0.7],
+          }}
+          transition={{
+            duration: 2.5,
+            repeat: Infinity,
+            ease: 'easeInOut',
+            delay: index * 0.2,
+          }}
+        >
+          <div className={cn('w-2 h-2 rounded-full', config.dot)} />
+        </motion.div>
+      </div>
+
+      {/* Card */}
+      <motion.div
+        className={cn(
+          'flex-1 rounded-xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-sm p-4',
+          'hover:bg-white/[0.04] transition-colors duration-200'
+        )}
+        whileHover={{ x: 2 }}
+      >
+        {/* Type badge */}
+        <div className="flex items-center gap-2 mb-2">
+          <span
+            className={cn(
+              'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider border',
+              config.bg,
+              config.border,
+              config.color
+            )}
+          >
+            <config.Icon className="w-3 h-3" />
+            {task.type}
+          </span>
+        </div>
+
+        <p className="text-sm font-medium text-slate-200 mb-1">{task.title}</p>
+
+        {task.description && (
+          <p className="text-xs text-slate-400 leading-relaxed line-clamp-2 mb-2">
+            {task.description}
+          </p>
+        )}
+
+        {task.dueDate && (
+          <div className="flex items-center gap-1.5">
+            <Clock className="w-3 h-3 text-slate-500" />
+            <p className="text-[11px] text-slate-500">
+              {formatRelativeDate(task.dueDate)}
+            </p>
+          </div>
+        )}
+      </motion.div>
+    </motion.div>
+  );
+}
+
 export default function DeadlineTimeline({ deadline, taskCards }: DeadlineTimelineProps) {
   const { label: deadlineLabel, days: deadlineDays } = useCountdown(deadline);
 
@@ -124,118 +246,17 @@ export default function DeadlineTimeline({ deadline, taskCards }: DeadlineTimeli
 
       {/* Main deadline node */}
       {deadline && (
-        <motion.div variants={nodeVariants} className="relative flex items-start gap-4 pb-6">
-          {/* Dot */}
-          <div className="absolute -left-8 top-1 flex items-center justify-center">
-            <motion.div
-              className={cn('w-6 h-6 rounded-full flex items-center justify-center', deadlineColors.dot)}
-              animate={{
-                scale: [1, 1.25, 1],
-                opacity: [0.8, 1, 0.8],
-              }}
-              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-              style={{
-                boxShadow: `0 0 12px 2px`,
-              }}
-            >
-              <Calendar className="w-3 h-3 text-white" />
-            </motion.div>
-          </div>
-
-          {/* Card */}
-          <div
-            className={cn(
-              'flex-1 rounded-xl border border-white/[0.06] bg-white/[0.03] backdrop-blur-sm p-4',
-              'shadow-lg'
-            )}
-          >
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">
-                Main Deadline
-              </span>
-            </div>
-            <p className={cn('text-sm font-semibold', deadlineColors.text)}>
-              {formatRelativeDate(deadline)}
-            </p>
-            <div className="flex items-center gap-1.5 mt-1.5">
-              <Clock className="w-3 h-3 text-slate-500" />
-              <p className="text-xs text-slate-400">{deadlineLabel}</p>
-            </div>
-          </div>
-        </motion.div>
+        <MainDeadlineNode
+          deadline={deadline}
+          deadlineColors={deadlineColors}
+          deadlineLabel={deadlineLabel}
+        />
       )}
 
       {/* Task card nodes */}
-      {taskCards.map((task, i) => {
-        const config = TYPE_CONFIG[task.type] ?? TYPE_CONFIG.verification;
-
-        return (
-          <motion.div
-            key={`${task.title}-${i}`}
-            variants={nodeVariants}
-            className="relative flex items-start gap-4 pb-5 last:pb-0"
-          >
-            {/* Dot */}
-            <div className="absolute -left-8 top-1.5 flex items-center justify-center">
-              <motion.div
-                className={cn('w-5 h-5 rounded-full flex items-center justify-center', config.bg, 'border', config.border)}
-                animate={{
-                  opacity: [0.7, 1, 0.7],
-                }}
-                transition={{
-                  duration: 2.5,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                  delay: i * 0.2,
-                }}
-              >
-                <div className={cn('w-2 h-2 rounded-full', config.dot)} />
-              </motion.div>
-            </div>
-
-            {/* Card */}
-            <motion.div
-              className={cn(
-                'flex-1 rounded-xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-sm p-4',
-                'hover:bg-white/[0.04] transition-colors duration-200'
-              )}
-              whileHover={{ x: 2 }}
-            >
-              {/* Type badge */}
-              <div className="flex items-center gap-2 mb-2">
-                <span
-                  className={cn(
-                    'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider border',
-                    config.bg,
-                    config.border,
-                    config.color
-                  )}
-                >
-                  <config.Icon className="w-3 h-3" />
-                  {task.type}
-                </span>
-              </div>
-
-              <p className="text-sm font-medium text-slate-200 mb-1">{task.title}</p>
-
-              {task.description && (
-                <p className="text-xs text-slate-400 leading-relaxed line-clamp-2 mb-2">
-                  {task.description}
-                </p>
-              )}
-
-              {task.dueDate && (
-                <div className="flex items-center gap-1.5">
-                  <Clock className="w-3 h-3 text-slate-500" />
-                  <p className="text-[11px] text-slate-500">
-                    {formatRelativeDate(task.dueDate)}
-                  </p>
-                </div>
-              )}
-            </motion.div>
-          </motion.div>
-        );
-      })}
+      {taskCards.map((task, i) => (
+        <TaskCardNode key={`${task.title}-${i}`} task={task} index={i} />
+      ))}
     </motion.div>
   );
 }

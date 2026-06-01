@@ -12,6 +12,8 @@ export default function UrgentDeadlines() {
   const { emergency } = useEmergencyMode();
   const { tasks, isLoading } = useTasks();
 
+  const nowTime = new Date().getTime();
+
   // Filter tasks based on whether focus mode is active
   const filteredTasks = tasks.filter((task) => {
     if (task.status === 'completed') return false;
@@ -21,9 +23,8 @@ export default function UrgentDeadlines() {
       return task.priority === 'critical' || task.priority === 'high';
     } else {
       // Normally, show tasks due in the next 48 hours (or overdue)
-      const now = new Date();
       const deadline = new Date(task.deadline);
-      const diffTime = deadline.getTime() - now.getTime();
+      const diffTime = deadline.getTime() - nowTime;
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       return diffDays <= 2;
     }

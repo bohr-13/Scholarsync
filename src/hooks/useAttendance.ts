@@ -8,7 +8,7 @@
  * so changes reflect instantly across all components.
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from '@/components/providers/AuthProvider';
 import {
   onAttendanceSnapshot,
@@ -101,14 +101,17 @@ export function useAttendance(): UseAttendanceReturn {
   );
 
   // Computed values from the real-time data
-  const averageAttendance =
-    subjects.length > 0
+  const averageAttendance = useMemo(() => {
+    return subjects.length > 0
       ? Math.round(
           (subjects.reduce((sum, s) => sum + s.percentage, 0) / subjects.length) * 10
         ) / 10
       : 0;
+  }, [subjects]);
 
-  const atRiskCount = subjects.filter((s) => s.riskLevel !== 'safe').length;
+  const atRiskCount = useMemo(() => {
+    return subjects.filter((s) => s.riskLevel !== 'safe').length;
+  }, [subjects]);
 
   return {
     subjects,

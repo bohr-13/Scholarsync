@@ -88,7 +88,7 @@ const AuthContext = createContext<AuthContextType>({
   signInWithGoogle: async () => {},
 });
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+function useAuthProvider() {
   const [user, setUser] = useState<UserState | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [authError, setAuthError] = useState<string | null>(null);
@@ -212,20 +212,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  return {
+    user,
+    isLoading,
+    authError,
+    clearError,
+    signIn,
+    signUp,
+    signOut,
+    updateUserProfile,
+    signInWithGoogle,
+  };
+}
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const authValue = useAuthProvider();
+
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isLoading,
-        authError,
-        clearError,
-        signIn,
-        signUp,
-        signOut,
-        updateUserProfile,
-        signInWithGoogle,
-      }}
-    >
+    <AuthContext.Provider value={authValue}>
       {children}
     </AuthContext.Provider>
   );

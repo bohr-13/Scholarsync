@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import {
   Sparkles,
@@ -57,13 +58,31 @@ export default function Dashboard() {
   };
 
   // Micro statistics row
-  const stats = [
-    { label: 'Total Tasks', value: statsLoading ? '—' : String(tasks.length), icon: ClipboardList, color: 'text-blue-400', bg: 'bg-blue-500/10' },
-    { label: 'Completed', value: statsLoading ? '—' : String(tasks.filter(t => t.status === 'completed').length), icon: CheckCircle, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-    { label: 'Upcoming', value: statsLoading ? '—' : String(tasks.filter(t => t.status !== 'completed').length), icon: Calendar, color: 'text-purple-400', bg: 'bg-purple-500/10' },
-    { label: 'Avg Attendance', value: statsLoading ? '—' : `${averageAttendance}%`, icon: Percent, color: 'text-teal-400', bg: 'bg-teal-500/10' },
-    { label: 'Critical Tasks', value: statsLoading ? '—' : String(tasks.filter(t => t.priority === 'critical' && t.status !== 'completed').length), icon: AlertOctagon, color: 'text-rose-400', bg: 'bg-rose-500/10' },
-  ];
+  const stats = useMemo(() => {
+    let completedCount = 0;
+    let upcomingCount = 0;
+    let criticalCount = 0;
+
+    for (let i = 0; i < tasks.length; i++) {
+      const t = tasks[i];
+      if (t.status === 'completed') {
+        completedCount++;
+      } else {
+        upcomingCount++;
+        if (t.priority === 'critical') {
+          criticalCount++;
+        }
+      }
+    }
+
+    return [
+      { label: 'Total Tasks', value: statsLoading ? '—' : String(tasks.length), icon: ClipboardList, color: 'text-blue-400', bg: 'bg-blue-500/10' },
+      { label: 'Completed', value: statsLoading ? '—' : String(completedCount), icon: CheckCircle, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+      { label: 'Upcoming', value: statsLoading ? '—' : String(upcomingCount), icon: Calendar, color: 'text-purple-400', bg: 'bg-purple-500/10' },
+      { label: 'Avg Attendance', value: statsLoading ? '—' : `${averageAttendance}%`, icon: Percent, color: 'text-teal-400', bg: 'bg-teal-500/10' },
+      { label: 'Critical Tasks', value: statsLoading ? '—' : String(criticalCount), icon: AlertOctagon, color: 'text-rose-400', bg: 'bg-rose-500/10' },
+    ];
+  }, [tasks, statsLoading, averageAttendance]);
 
   return (
     <motion.div

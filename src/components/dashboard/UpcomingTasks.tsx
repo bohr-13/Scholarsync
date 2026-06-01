@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { Calendar, FileText, ClipboardList, CreditCard, Award, ArrowRight } from 'lucide-react';
+import { useMemo } from 'react';
 import Link from 'next/link';
 import { useTasks } from '@/hooks/useTasks';
 import { formatRelativeDate, getUrgencyColor } from '@/lib/utils';
@@ -18,10 +19,12 @@ const categoryIcons: Record<string, React.ComponentType<{ className?: string }>>
 
 export default function UpcomingTasks() {
   const { tasks, isLoading } = useTasks();
-  const sortedTasks = [...tasks]
-    .filter((t) => t.status !== 'completed')
-    .sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime())
-    .slice(0, 4);
+  const sortedTasks = useMemo(() => {
+    return [...tasks]
+      .filter((t) => t.status !== 'completed')
+      .sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime())
+      .slice(0, 4);
+  }, [tasks]);
 
   return (
     <TiltCard className="p-6 h-full flex flex-col justify-between" intensity={3}>

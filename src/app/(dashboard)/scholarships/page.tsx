@@ -123,12 +123,13 @@ export default function ScholarshipsPage() {
 
     // Filter by search query
     if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase().trim();
+      const escapedQuery = searchQuery.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const searchRegex = new RegExp(escapedQuery, 'i');
       items = items.filter(
         (s) =>
-          s.name.toLowerCase().includes(query) ||
-          s.provider.toLowerCase().includes(query) ||
-          (s.tags && s.tags.some((tag) => tag.toLowerCase().includes(query)))
+          searchRegex.test(s.name) ||
+          searchRegex.test(s.provider) ||
+          (s.tags && s.tags.some((tag) => searchRegex.test(tag)))
       );
     }
 

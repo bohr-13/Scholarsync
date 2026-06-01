@@ -1,30 +1,24 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
-  Calendar,
   DollarSign,
   AlertTriangle,
-  Tag,
-  Zap,
   FileCheck,
-  ListOrdered,
   Plus,
   RefreshCw,
   Clock,
   CheckSquare,
   Sparkles,
   Smile,
-  ShieldCheck,
-  FileText,
   Heart,
   CheckCircle2,
 } from 'lucide-react';
 import TiltCard from '@/components/shared/TiltCard';
 import { cn } from '@/lib/utils';
-import { formatRelativeDate, getUrgencyColor, getUrgencyBg } from '@/lib/utils';
-import { CATEGORY_LABELS, PRIORITY_LABELS } from '@/lib/constants';
+import { getUrgencyColor } from '@/lib/utils';
+import { PRIORITY_LABELS } from '@/lib/constants';
 import type { ExtractionResult as ExtractionResultType, StudyPlan } from '@/types';
 import StudyPlanner from '@/components/scan/StudyPlanner';
 import IntelligenceCard from '@/components/scan/IntelligenceCard';

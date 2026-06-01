@@ -85,6 +85,186 @@ function highlightEntities(
   return <>{parts}</>;
 }
 
+function ImagePreviewMode({
+  imageData,
+  fileName,
+  fitToWidth,
+  zoom,
+}: {
+  imageData?: string;
+  fileName?: string;
+  fitToWidth: boolean;
+  zoom: number;
+}) {
+  if (!imageData) {
+    return (
+      <div className="flex items-center justify-center min-h-full p-8">
+        <p className="text-sm text-slate-500">No image data available</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center justify-center min-h-full p-4">
+      <motion.img
+        src={imageData}
+        alt={fileName ?? 'Notice preview'}
+        className={cn(
+          'rounded-xl border border-white/[0.08] shadow-lg',
+          'transition-transform duration-200 origin-center',
+          fitToWidth ? 'w-full h-auto' : 'max-w-none'
+        )}
+        style={{ transform: fitToWidth ? undefined : `scale(${zoom})` }}
+        draggable={false}
+      />
+    </div>
+  );
+}
+
+function PdfPreviewMode({ fileName }: { fileName?: string }) {
+  return (
+    <div className="flex items-center justify-center min-h-full p-8">
+      <motion.div
+        className="flex flex-col items-center gap-4"
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 25, delay: 0.1 }}
+      >
+        {/* Animated gradient background */}
+        <div className="relative">
+          <motion.div
+            className="absolute -inset-6 rounded-3xl opacity-30"
+            style={{
+              background:
+                'linear-gradient(135deg, rgba(59,130,246,0.15), rgba(139,92,246,0.15), rgba(59,130,246,0.15))',
+              backgroundSize: '200% 200%',
+            }}
+            animate={{
+              backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'],
+            }}
+            transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+          />
+          <div className="relative w-20 h-20 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center">
+            <FileText className="w-10 h-10 text-rose-400" />
+          </div>
+        </div>
+        {fileName && (
+          <p className="text-sm font-medium text-slate-200 text-center max-w-[200px] truncate">
+            {fileName}
+          </p>
+        )}
+        <span className="text-[11px] uppercase tracking-wider text-slate-500">
+          PDF Document
+        </span>
+      </motion.div>
+    </div>
+  );
+}
+
+function TextPreviewMode({
+  rawText,
+  highlightedText,
+}: {
+  rawText?: string;
+  highlightedText: React.ReactNode;
+}) {
+  if (!rawText) {
+    return (
+      <div className="flex items-center justify-center min-h-full p-8">
+        <p className="text-sm text-slate-500">No text content available</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-5">
+      <pre className="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap font-mono break-words">
+        {highlightedText}
+      </pre>
+    </div>
+  );
+}
+
+function PreviewControlBar({
+  source,
+  sourceLabel,
+  SourceIcon,
+  zoom,
+  fitToWidth,
+  zoomIn,
+  zoomOut,
+  toggleFit,
+}: {
+  source: 'pdf' | 'image' | 'text';
+  sourceLabel: string;
+  SourceIcon: typeof FileText;
+  zoom: number;
+  fitToWidth: boolean;
+  zoomIn: () => void;
+  zoomOut: () => void;
+  toggleFit: () => void;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.3 }}
+      className={cn(
+        'absolute bottom-3 left-3 right-3',
+        'flex items-center justify-between',
+        'rounded-xl border border-white/[0.08] bg-black/40 backdrop-blur-xl',
+        'px-3 py-2'
+      )}
+    >
+      {/* Source type badge */}
+      <div className="flex items-center gap-1.5">
+        <SourceIcon className="w-3.5 h-3.5 text-slate-400" />
+        <span className="text-[10px] uppercase tracking-wider text-slate-500 font-medium">
+          {sourceLabel}
+        </span>
+      </div>
+
+      {/* Zoom controls */}
+      <div className="flex items-center gap-1">
+        {source === 'image' && (
+          <>
+            <button
+              onClick={zoomOut}
+              className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-200 hover:bg-white/[0.06] transition-colors"
+              aria-label="Zoom out"
+            >
+              <ZoomOut className="w-3.5 h-3.5" />
+            </button>
+            <span className="text-[10px] text-slate-500 font-medium tabular-nums min-w-[32px] text-center">
+              {Math.round(zoom * 100)}%
+            </span>
+            <button
+              onClick={zoomIn}
+              className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-200 hover:bg-white/[0.06] transition-colors"
+              aria-label="Zoom in"
+            >
+              <ZoomIn className="w-3.5 h-3.5" />
+            </button>
+            <div className="w-px h-4 bg-white/[0.08] mx-1" />
+            <button
+              onClick={toggleFit}
+              className={cn(
+                'w-7 h-7 rounded-lg flex items-center justify-center transition-colors',
+                fitToWidth
+                  ? 'text-blue-400 bg-blue-500/10'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.06]'
+              )}
+              aria-label="Fit to width"
+            >
+              <Maximize2 className="w-3.5 h-3.5" />
+            </button>
+          </>
+        )}
+      </div>
+    </motion.div>
+  );
+}
+
 export default function NoticePreview({
   source,
   imageData,
@@ -124,142 +304,30 @@ export default function NoticePreview({
     >
       {/* Content area */}
       <div ref={containerRef} className="flex-1 overflow-auto relative">
-        {/* ── Image mode ── */}
-        {source === 'image' && imageData && (
-          <div className="flex items-center justify-center min-h-full p-4">
-            <motion.img
-              src={imageData}
-              alt={fileName ?? 'Notice preview'}
-              className={cn(
-                'rounded-xl border border-white/[0.08] shadow-lg',
-                'transition-transform duration-200 origin-center',
-                fitToWidth ? 'w-full h-auto' : 'max-w-none'
-              )}
-              style={{ transform: fitToWidth ? undefined : `scale(${zoom})` }}
-              draggable={false}
-            />
-          </div>
+        {source === 'image' && (
+          <ImagePreviewMode
+            imageData={imageData}
+            fileName={fileName}
+            fitToWidth={fitToWidth}
+            zoom={zoom}
+          />
         )}
-
-        {/* ── PDF mode ── */}
-        {source === 'pdf' && (
-          <div className="flex items-center justify-center min-h-full p-8">
-            <motion.div
-              className="flex flex-col items-center gap-4"
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 25, delay: 0.1 }}
-            >
-              {/* Animated gradient background */}
-              <div className="relative">
-                <motion.div
-                  className="absolute -inset-6 rounded-3xl opacity-30"
-                  style={{
-                    background:
-                      'linear-gradient(135deg, rgba(59,130,246,0.15), rgba(139,92,246,0.15), rgba(59,130,246,0.15))',
-                    backgroundSize: '200% 200%',
-                  }}
-                  animate={{
-                    backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'],
-                  }}
-                  transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-                />
-                <div className="relative w-20 h-20 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center">
-                  <FileText className="w-10 h-10 text-rose-400" />
-                </div>
-              </div>
-              {fileName && (
-                <p className="text-sm font-medium text-slate-200 text-center max-w-[200px] truncate">
-                  {fileName}
-                </p>
-              )}
-              <span className="text-[11px] uppercase tracking-wider text-slate-500">
-                PDF Document
-              </span>
-            </motion.div>
-          </div>
-        )}
-
-        {/* ── Text mode ── */}
-        {source === 'text' && rawText && (
-          <div className="p-5">
-            <pre className="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap font-mono break-words">
-              {highlightedText}
-            </pre>
-          </div>
-        )}
-
-        {/* ── Empty fallback ── */}
-        {source === 'image' && !imageData && (
-          <div className="flex items-center justify-center min-h-full p-8">
-            <p className="text-sm text-slate-500">No image data available</p>
-          </div>
-        )}
-        {source === 'text' && !rawText && (
-          <div className="flex items-center justify-center min-h-full p-8">
-            <p className="text-sm text-slate-500">No text content available</p>
-          </div>
+        {source === 'pdf' && <PdfPreviewMode fileName={fileName} />}
+        {source === 'text' && (
+          <TextPreviewMode rawText={rawText} highlightedText={highlightedText} />
         )}
       </div>
 
-      {/* Floating control bar */}
-      <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className={cn(
-          'absolute bottom-3 left-3 right-3',
-          'flex items-center justify-between',
-          'rounded-xl border border-white/[0.08] bg-black/40 backdrop-blur-xl',
-          'px-3 py-2'
-        )}
-      >
-        {/* Source type badge */}
-        <div className="flex items-center gap-1.5">
-          <SourceIcon className="w-3.5 h-3.5 text-slate-400" />
-          <span className="text-[10px] uppercase tracking-wider text-slate-500 font-medium">
-            {sourceLabel}
-          </span>
-        </div>
-
-        {/* Zoom controls */}
-        <div className="flex items-center gap-1">
-          {source === 'image' && (
-            <>
-              <button
-                onClick={zoomOut}
-                className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-200 hover:bg-white/[0.06] transition-colors"
-                aria-label="Zoom out"
-              >
-                <ZoomOut className="w-3.5 h-3.5" />
-              </button>
-              <span className="text-[10px] text-slate-500 font-medium tabular-nums min-w-[32px] text-center">
-                {Math.round(zoom * 100)}%
-              </span>
-              <button
-                onClick={zoomIn}
-                className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-200 hover:bg-white/[0.06] transition-colors"
-                aria-label="Zoom in"
-              >
-                <ZoomIn className="w-3.5 h-3.5" />
-              </button>
-              <div className="w-px h-4 bg-white/[0.08] mx-1" />
-              <button
-                onClick={toggleFit}
-                className={cn(
-                  'w-7 h-7 rounded-lg flex items-center justify-center transition-colors',
-                  fitToWidth
-                    ? 'text-blue-400 bg-blue-500/10'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.06]'
-                )}
-                aria-label="Fit to width"
-              >
-                <Maximize2 className="w-3.5 h-3.5" />
-              </button>
-            </>
-          )}
-        </div>
-      </motion.div>
+      <PreviewControlBar
+        source={source}
+        sourceLabel={sourceLabel}
+        SourceIcon={SourceIcon}
+        zoom={zoom}
+        fitToWidth={fitToWidth}
+        zoomIn={zoomIn}
+        zoomOut={zoomOut}
+        toggleFit={toggleFit}
+      />
     </motion.div>
   );
 }

@@ -2,11 +2,10 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Minus, Trash2, GraduationCap, X, Check, AlertTriangle, Shield } from 'lucide-react';
+import { Plus, Minus, Trash2, X, Check, AlertTriangle, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getRiskColor } from '@/lib/utils';
 import { useAttendance } from '@/hooks/useAttendance';
-import type { SubjectAttendance } from '@/types';
 
 function CircularProgress({
   percentage,

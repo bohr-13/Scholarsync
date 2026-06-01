@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BookOpen, Sparkles, CheckCircle2, ChevronRight, Calendar, Brain, ListChecks } from 'lucide-react';
+import { BookOpen, Sparkles, CheckCircle2, Brain, ListChecks } from 'lucide-react';
 import type { StudyPlan } from '@/types';
 
 interface StudyPlannerProps {

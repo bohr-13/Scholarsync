@@ -176,16 +176,15 @@ export function useTodos(): UseTodosReturn {
       const list = todoLists.find((l) => l.id === listId);
       if (!list) return;
 
-      const updatedTasks = list.tasks.map((task) => {
-        if (task.id === taskId) {
-          return {
-            ...task,
-            ...updates,
-            updatedAt: new Date().toISOString(),
-          };
-        }
-        return task;
-      });
+      const taskIndex = list.tasks.findIndex((task) => task.id === taskId);
+      if (taskIndex === -1) return;
+
+      const updatedTasks = [...list.tasks];
+      updatedTasks[taskIndex] = {
+        ...updatedTasks[taskIndex],
+        ...updates,
+        updatedAt: new Date().toISOString(),
+      };
 
       try {
         await fsUpdateTodoList(user.uid, listId, { tasks: updatedTasks });
@@ -226,16 +225,15 @@ export function useTodos(): UseTodosReturn {
       const list = todoLists.find((l) => l.id === listId);
       if (!list) return;
 
-      const updatedTasks = list.tasks.map((task) => {
-        if (task.id === taskId) {
-          return {
-            ...task,
-            completed: !task.completed,
-            updatedAt: new Date().toISOString(),
-          };
-        }
-        return task;
-      });
+      const taskIndex = list.tasks.findIndex((task) => task.id === taskId);
+      if (taskIndex === -1) return;
+
+      const updatedTasks = [...list.tasks];
+      updatedTasks[taskIndex] = {
+        ...updatedTasks[taskIndex],
+        completed: !updatedTasks[taskIndex].completed,
+        updatedAt: new Date().toISOString(),
+      };
 
       try {
         await fsUpdateTodoList(user.uid, listId, { tasks: updatedTasks });

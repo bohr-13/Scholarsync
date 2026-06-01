@@ -378,8 +378,14 @@ export async function generateStudyPlan(
     const jsonMatch = response.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error('No JSON found in response');
 
-    const plan = JSON.parse(jsonMatch[0]) as StudyPlan;
-    if (!plan.days || plan.days.length === 0) {
+    let plan: StudyPlan;
+    try {
+      plan = JSON.parse(jsonMatch[0]) as StudyPlan;
+    } catch {
+      throw new Error('Failed to parse JSON response from Gemini');
+    }
+
+    if (!plan || typeof plan !== 'object' || !Array.isArray(plan.days) || plan.days.length === 0) {
       throw new Error('Invalid study plan structure');
     }
 

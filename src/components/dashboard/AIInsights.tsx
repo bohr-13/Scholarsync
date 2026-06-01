@@ -42,8 +42,9 @@ export default function AIInsights() {
     }
 
     // 2. Scholarship Tip Insight
+    const nowTime = Date.now();
     const upcomingScholarships = scholarships.filter((s) => {
-      const diffDays = (new Date(s.deadline).getTime() - new Date().getTime()) / (1000 * 3600 * 24);
+      const diffDays = (new Date(s.deadline).getTime() - nowTime) / (1000 * 3600 * 24);
       return diffDays > 0 && diffDays <= 30;
     });
     if (upcomingScholarships.length > 0) {

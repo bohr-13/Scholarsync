@@ -584,7 +584,7 @@ export default function TodoPage() {
       </div>
 
       {/* ============================================================ */}
-      {/*  MODAL OVERLAY: CREATE NEW CUSTOM TODO LIST                  */}
+      {/*  MODAL OVERLAY: CREATE NEW CUSTOM CHECKLIST                  */}
       {/* ============================================================ */}
       <AnimatePresence>
         {isModalOpen && (

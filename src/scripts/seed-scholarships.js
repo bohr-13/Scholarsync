@@ -68,8 +68,8 @@ const realScholarships = [
       gender: "all",
     },
     description: "This central sector scheme provides financial assistance to meritorious students from underprivileged families to meet a part of their day-to-day expenses while pursuing higher studies.",
-    applyLink: "https://scholarships.gov.in/",
-    applicationLink: "https://scholarships.gov.in/", // back-compat
+    applyLink: env.NSP_SCHOLARSHIP_URL || "https://scholarships.gov.in/",
+    applicationLink: env.NSP_SCHOLARSHIP_URL || "https://scholarships.gov.in/", // back-compat
     tags: ["NSP", "Central Scheme", "Merit-cum-Means", "Undergraduate"],
     featured: true,
     requiredDocuments: [
@@ -101,8 +101,8 @@ const realScholarships = [
       gender: "female",
     },
     description: "An initiative by the Government of India and AICTE to support and encourage young women to pursue technical education. The scholarship provides significant financial aid for tuition fees, computer purchase, and other equipment.",
-    applyLink: "https://scholarships.gov.in/",
-    applicationLink: "https://scholarships.gov.in/",
+    applyLink: env.NSP_SCHOLARSHIP_URL || "https://scholarships.gov.in/",
+    applicationLink: env.NSP_SCHOLARSHIP_URL || "https://scholarships.gov.in/",
     tags: ["AICTE", "Girls Only", "Technical Education", "Degree"],
     featured: true,
     requiredDocuments: [
@@ -134,8 +134,8 @@ const realScholarships = [
       gender: "all",
     },
     description: "Saksham is a MHRD scheme being implemented by AICTE aimed at providing encouragement and support to specially-abled children to pursue technical education.",
-    applyLink: "https://scholarships.gov.in/",
-    applicationLink: "https://scholarships.gov.in/",
+    applyLink: env.NSP_SCHOLARSHIP_URL || "https://scholarships.gov.in/",
+    applicationLink: env.NSP_SCHOLARSHIP_URL || "https://scholarships.gov.in/",
     tags: ["AICTE", "Specially Abled", "Technical", "Financial Aid"],
     featured: false,
     requiredDocuments: [
@@ -167,8 +167,8 @@ const realScholarships = [
       gender: "all",
     },
     description: "AICTE Swanath scheme aims to support orphans, wards of parents deceased due to COVID-19, and children of martyrs to continue their education and build a bright future.",
-    applyLink: "https://scholarships.gov.in/",
-    applicationLink: "https://scholarships.gov.in/",
+    applyLink: env.NSP_SCHOLARSHIP_URL || "https://scholarships.gov.in/",
+    applicationLink: env.NSP_SCHOLARSHIP_URL || "https://scholarships.gov.in/",
     tags: ["AICTE", "Social Support", "Technical", "Orphans"],
     featured: false,
     requiredDocuments: [
@@ -199,8 +199,8 @@ const realScholarships = [
       gender: "all",
     },
     description: "SHE is a component of Innovation in Science Pursuit for Inspired Research (INSPIRE) program. It offers 10,000 scholarships annually to attract talented youth to study natural and basic sciences.",
-    applyLink: "https://www.online-inspire.gov.in/",
-    applicationLink: "https://www.online-inspire.gov.in/",
+    applyLink: env.INSPIRE_SCHOLARSHIP_URL || "https://www.online-inspire.gov.in/",
+    applicationLink: env.INSPIRE_SCHOLARSHIP_URL || "https://www.online-inspire.gov.in/",
     tags: ["DST", "Basic Sciences", "Research", "Pure Sciences"],
     featured: true,
     requiredDocuments: [
@@ -231,8 +231,8 @@ const realScholarships = [
       gender: "all",
     },
     description: "Supports outstanding engineering and tech students from disadvantaged families to pursue innovation-focused degrees, covering tuition, books, and living stipends.",
-    applyLink: "https://bhartifoundation.org/",
-    applicationLink: "https://bhartifoundation.org/",
+    applyLink: env.BHARTI_SCHOLARSHIP_URL || "https://bhartifoundation.org/",
+    applicationLink: env.BHARTI_SCHOLARSHIP_URL || "https://bhartifoundation.org/",
     tags: ["Private", "Tech & Innovation", "Engineering", "Merit-based"],
     featured: true,
     requiredDocuments: [
@@ -263,8 +263,8 @@ const realScholarships = [
       gender: "all",
     },
     description: "One of the most prestigious engineering scholarship awards in India, designed to recognize and nurture academic excellence, leadership, and technical innovation among UG engineering students.",
-    applyLink: "https://scholarships.theiet.in/",
-    applicationLink: "https://scholarships.theiet.in/",
+    applyLink: env.IET_SCHOLARSHIP_URL || "https://scholarships.theiet.in/",
+    applicationLink: env.IET_SCHOLARSHIP_URL || "https://scholarships.theiet.in/",
     tags: ["IET", "Engineering Award", "Technical Excellence", "UG"],
     featured: true,
     requiredDocuments: [

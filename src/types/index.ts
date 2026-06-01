@@ -186,7 +186,7 @@ export interface GpaState {
   totalSemesters: number;
 }
 
-// ─── AI Generated TODO System ───────────────────────────────────────
+// ─── AI Generated Todo System ───────────────────────────────────────
 export interface TodoTask {
   id: string;
   text: string;

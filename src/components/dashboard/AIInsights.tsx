@@ -7,13 +7,101 @@ import { useTasks } from '@/hooks/useTasks';
 import { useAttendance } from '@/hooks/useAttendance';
 import { useScholarships } from '@/hooks/useScholarships';
 import TiltCard from '@/components/shared/TiltCard';
-import type { AIInsight } from '@/types';
+import type { AIInsight, SubjectAttendance, Scholarship, Task } from '@/types';
 
 const insightIcons: Record<string, React.ComponentType<{ className?: string }>> = {
   AlertTriangle: AlertTriangle,
   GraduationCap: GraduationCap,
   BarChart3: BarChart3,
 };
+
+function generateAttendanceInsight(subjects: SubjectAttendance[]): Omit<AIInsight, 'id'> | null {
+  const lowAttendanceSubjects = subjects.filter((s) => s.percentage < 75);
+  if (lowAttendanceSubjects.length > 0) {
+    const subjectNames = lowAttendanceSubjects.map(s => s.code).join(', ');
+    return {
+      type: 'warning',
+      title: 'Attendance Alert',
+      message: `Your attendance in ${subjectNames} is below the 75% safe limit. Attend the next few classes consecutively to reach the safe zone.`,
+      icon: 'AlertTriangle',
+    };
+  }
+  return null;
+}
+
+function generateScholarshipInsight(scholarships: Scholarship[]): Omit<AIInsight, 'id'> | null {
+  const upcomingScholarships = scholarships.filter((s) => {
+    const diffDays = (new Date(s.deadline).getTime() - new Date().getTime()) / (1000 * 3600 * 24);
+    return diffDays > 0 && diffDays <= 30;
+  });
+  if (upcomingScholarships.length > 0) {
+    return {
+      type: 'tip',
+      title: 'Scholarship Window Open',
+      message: `${upcomingScholarships[0].name} deadline is approaching. You match the eligibility criteria based on your profile.`,
+      icon: 'GraduationCap',
+    };
+  }
+  return null;
+}
+
+function generateTaskInsight(tasks: Task[]): Omit<AIInsight, 'id'> | null {
+  const completedTasks = tasks.filter(t => t.status === 'completed').length;
+  const criticalTasks = tasks.filter(t => t.priority === 'critical' && t.status !== 'completed').length;
+
+  if (criticalTasks > 0) {
+    return {
+      type: 'info',
+      title: 'Action Required',
+      message: `You have ${criticalTasks} critical deadlines coming up. Prioritize them immediately.`,
+      icon: 'BarChart3',
+    };
+  } else {
+    return {
+      type: 'info',
+      title: 'Weekly Summary',
+      message: `You have completed ${completedTasks} tasks. You have no critical deadlines. Great job staying organized!`,
+      icon: 'BarChart3',
+    };
+  }
+}
+
+function InsightCard({ ins, index }: { ins: AIInsight; index: number }) {
+  const Icon = insightIcons[ins.icon] || BarChart3;
+
+  let textGlow = 'dark:text-blue-400 text-blue-600';
+  let borderStyle = 'border-blue-500/10 bg-blue-500/[0.02]';
+
+  if (ins.type === 'warning') {
+    textGlow = 'text-rose-400 dark:text-rose-400';
+    borderStyle = 'border-rose-500/10 bg-rose-500/[0.02]';
+  } else if (ins.type === 'tip') {
+    textGlow = 'text-amber-400 dark:text-amber-400';
+    borderStyle = 'border-amber-500/10 bg-amber-500/[0.02]';
+  }
+
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, scale: 0.95, y: 10 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 25, delay: index * 0.1 }}
+      className={`p-3.5 rounded-xl border flex gap-3 ${borderStyle}`}
+    >
+      <div className="mt-0.5 shrink-0">
+        <Icon className={`w-4 h-4 ${textGlow}`} />
+      </div>
+      <div>
+        <h4 className="text-xs font-bold dark:text-slate-200 text-slate-800">
+          {ins.title}
+        </h4>
+        <p className="text-[10.5px] dark:text-slate-400 text-slate-600 mt-1 leading-normal">
+          {ins.message}
+        </p>
+      </div>
+    </motion.div>
+  );
+}
 
 export default function AIInsights() {
   const { tasks, isLoading: tasksLoading } = useTasks();
@@ -25,58 +113,16 @@ export default function AIInsights() {
   const insights = useMemo(() => {
     if (isLoading) return [];
     
-    const generatedInsights: AIInsight[] = [];
-    let idCounter = 1;
+    const rawInsights = [
+      generateAttendanceInsight(subjects),
+      generateScholarshipInsight(scholarships),
+      generateTaskInsight(tasks),
+    ].filter((ins): ins is Omit<AIInsight, 'id'> => ins !== null);
 
-    // 1. Attendance Warning Insight
-    const lowAttendanceSubjects = subjects.filter((s) => s.percentage < 75);
-    if (lowAttendanceSubjects.length > 0) {
-      const subjectNames = lowAttendanceSubjects.map(s => s.code).join(', ');
-      generatedInsights.push({
-        id: `ins-${idCounter++}`,
-        type: 'warning',
-        title: 'Attendance Alert',
-        message: `Your attendance in ${subjectNames} is below the 75% safe limit. Attend the next few classes consecutively to reach the safe zone.`,
-        icon: 'AlertTriangle',
-      });
-    }
-
-    // 2. Scholarship Tip Insight
-    const upcomingScholarships = scholarships.filter((s) => {
-      const diffDays = (new Date(s.deadline).getTime() - new Date().getTime()) / (1000 * 3600 * 24);
-      return diffDays > 0 && diffDays <= 30;
-    });
-    if (upcomingScholarships.length > 0) {
-      generatedInsights.push({
-        id: `ins-${idCounter++}`,
-        type: 'tip',
-        title: 'Scholarship Window Open',
-        message: `${upcomingScholarships[0].name} deadline is approaching. You match the eligibility criteria based on your profile.`,
-        icon: 'GraduationCap',
-      });
-    }
-
-    // 3. Task Progress Info Insight
-    const completedTasks = tasks.filter(t => t.status === 'completed').length;
-    const criticalTasks = tasks.filter(t => t.priority === 'critical' && t.status !== 'completed').length;
-    
-    if (criticalTasks > 0) {
-      generatedInsights.push({
-        id: `ins-${idCounter++}`,
-        type: 'info',
-        title: 'Action Required',
-        message: `You have ${criticalTasks} critical deadlines coming up. Prioritize them immediately.`,
-        icon: 'BarChart3',
-      });
-    } else {
-      generatedInsights.push({
-        id: `ins-${idCounter++}`,
-        type: 'info',
-        title: 'Weekly Summary',
-        message: `You have completed ${completedTasks} tasks. You have no critical deadlines. Great job staying organized!`,
-        icon: 'BarChart3',
-      });
-    }
+    const generatedInsights: AIInsight[] = rawInsights.map((ins, index) => ({
+      ...ins,
+      id: `ins-${index + 1}`
+    }));
 
     return generatedInsights.slice(0, 3); // Max 3 insights
   }, [tasks, subjects, scholarships, isLoading]);
@@ -113,43 +159,9 @@ export default function AIInsights() {
                 No new insights right now. Keep up the good work!
               </motion.div>
             ) : (
-              insights.map((ins, i) => {
-                const Icon = insightIcons[ins.icon] || BarChart3;
-
-                let textGlow = 'dark:text-blue-400 text-blue-600';
-                let borderStyle = 'border-blue-500/10 bg-blue-500/[0.02]';
-
-                if (ins.type === 'warning') {
-                  textGlow = 'text-rose-400 dark:text-rose-400';
-                  borderStyle = 'border-rose-500/10 bg-rose-500/[0.02]';
-                } else if (ins.type === 'tip') {
-                  textGlow = 'text-amber-400 dark:text-amber-400';
-                  borderStyle = 'border-amber-500/10 bg-amber-500/[0.02]';
-                }
-
-                return (
-                  <motion.div
-                    key={ins.id}
-                    layout
-                    initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    transition={{ type: 'spring', stiffness: 300, damping: 25, delay: i * 0.1 }}
-                    className={`p-3.5 rounded-xl border flex gap-3 ${borderStyle}`}
-                  >
-                    <div className="mt-0.5 shrink-0">
-                      <Icon className={`w-4 h-4 ${textGlow}`} />
-                    </div>
-                    <div>
-                      <h4 className="text-xs font-bold dark:text-slate-200 text-slate-800">
-                        {ins.title}
-                      </h4>
-                      <p className="text-[10.5px] dark:text-slate-400 text-slate-600 mt-1 leading-normal">
-                        {ins.message}
-                      </p>
-                    </div>
-                  </motion.div>
-                );
-              })
+              insights.map((ins, i) => (
+                <InsightCard key={ins.id} ins={ins} index={i} />
+              ))
             )}
           </AnimatePresence>
         </div>

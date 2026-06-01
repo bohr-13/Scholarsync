@@ -172,7 +172,7 @@ export default function TodoPage() {
           <div>
             <h1 className="text-2xl font-bold text-slate-100 tracking-tight">AI & Custom Workspaces</h1>
             <p className="text-sm text-slate-400">
-              Instant roadmap trackers, checklist pipelines, and automated TODO milestones
+              Instant roadmap trackers, checklist pipelines, and automated To-Do milestones
             </p>
           </div>
         </div>
@@ -196,7 +196,7 @@ export default function TodoPage() {
       <div className="flex flex-col lg:flex-row gap-6 items-start h-[calc(100vh-180px)]">
         
         {/* ============================================================ */}
-        {/*  LEFT PANEL: TODO LISTS OVERVIEW                           */}
+        {/*  LEFT PANEL: TO-DO LISTS OVERVIEW                           */}
         {/* ============================================================ */}
         <div className="w-full lg:w-[35%] flex flex-col h-full bg-white/[0.02] backdrop-blur-xl border border-white/[0.06] rounded-2xl overflow-hidden shadow-2xl">
           
@@ -322,7 +322,7 @@ export default function TodoPage() {
         </div>
 
         {/* ============================================================ */}
-        {/*  RIGHT PANEL: SELECTED TODO LIST DETAIL VIEW               */}
+        {/*  RIGHT PANEL: SELECTED TO-DO LIST DETAIL VIEW               */}
         {/* ============================================================ */}
         <div className="flex-1 w-full lg:w-[65%] h-full flex flex-col bg-white/[0.02] backdrop-blur-xl border border-white/[0.06] rounded-2xl overflow-hidden shadow-2xl">
           <AnimatePresence mode="wait">
@@ -584,7 +584,7 @@ export default function TodoPage() {
       </div>
 
       {/* ============================================================ */}
-      {/*  MODAL OVERLAY: CREATE NEW CUSTOM TODO LIST                  */}
+      {/*  MODAL OVERLAY: CREATE NEW CUSTOM TO-DO LIST                  */}
       {/* ============================================================ */}
       <AnimatePresence>
         {isModalOpen && (

@@ -36,7 +36,7 @@ export function useTodos(): UseTodosReturn {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Subscribe to real-time TODO lists
+  // Subscribe to real-time todo lists
   useEffect(() => {
     if (!user?.uid) {
       setTodoLists([]);
@@ -61,7 +61,7 @@ export function useTodos(): UseTodosReturn {
       },
       (err) => {
         console.error('Todo list hook subscription failed:', err);
-        setError('Failed to sync TODO lists.');
+        setError('Failed to sync todo lists.');
         setIsLoading(false);
       }
     );
@@ -106,7 +106,7 @@ export function useTodos(): UseTodosReturn {
         return id;
       } catch (err) {
         console.error('Failed to create todo list:', err);
-        setError('Failed to create TODO list');
+        setError('Failed to create todo list');
         return null;
       }
     },
@@ -121,7 +121,7 @@ export function useTodos(): UseTodosReturn {
         await fsUpdateTodoList(user.uid, listId, updates);
       } catch (err) {
         console.error('Failed to update todo list:', err);
-        setError('Failed to update TODO list');
+        setError('Failed to update todo list');
       }
     },
     [user?.uid]
@@ -135,7 +135,7 @@ export function useTodos(): UseTodosReturn {
         await fsDeleteTodoList(user.uid, listId);
       } catch (err) {
         console.error('Failed to delete todo list:', err);
-        setError('Failed to delete TODO list');
+        setError('Failed to delete todo list');
       }
     },
     [user?.uid]

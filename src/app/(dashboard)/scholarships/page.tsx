@@ -114,6 +114,8 @@ export default function ScholarshipsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showSavedOnly, setShowSavedOnly] = useState(false);
 
+  const savedScholarshipsSet = useMemo(() => new Set(savedScholarshipIds), [savedScholarshipIds]);
+
   // Compute matches, filtering, and sorting
   const processedScholarships = useMemo(() => {
     let items = scholarships.map((s) => ({
@@ -134,7 +136,7 @@ export default function ScholarshipsPage() {
 
     // Filter by saved only
     if (showSavedOnly) {
-      items = items.filter((s) => savedScholarshipIds.includes(s.id));
+      items = items.filter((s) => savedScholarshipsSet.has(s.id));
     }
 
     // Filter by dropdown selections
@@ -168,7 +170,7 @@ export default function ScholarshipsPage() {
     });
 
     return items;
-  }, [scholarships, profile, searchQuery, showSavedOnly, savedScholarshipIds, filters]);
+  }, [scholarships, profile, searchQuery, showSavedOnly, savedScholarshipsSet, filters]);
 
   // Recommended Scholarships: Top profile matches sorted descending (>= 75% match score)
   const recommendedScholarships = useMemo(() => {
@@ -188,7 +190,7 @@ export default function ScholarshipsPage() {
   }, [processedScholarships]);
 
   const handleToggleSave = async (id: string) => {
-    if (savedScholarshipIds.includes(id)) {
+    if (savedScholarshipsSet.has(id)) {
       await unsaveScholarship(id);
     } else {
       await saveScholarship(id);
@@ -271,7 +273,7 @@ export default function ScholarshipsPage() {
                 key={`rec-${s.id}`}
                 scholarship={s}
                 index={i}
-                isSaved={savedScholarshipIds.includes(s.id)}
+                isSaved={savedScholarshipsSet.has(s.id)}
                 onToggleSave={() => handleToggleSave(s.id)}
               />
             ))}
@@ -296,7 +298,7 @@ export default function ScholarshipsPage() {
                 key={`feat-${s.id}`}
                 scholarship={s}
                 index={i}
-                isSaved={savedScholarshipIds.includes(s.id)}
+                isSaved={savedScholarshipsSet.has(s.id)}
                 onToggleSave={() => handleToggleSave(s.id)}
               />
             ))}
@@ -349,7 +351,7 @@ export default function ScholarshipsPage() {
                   key={scholarship.id}
                   scholarship={scholarship}
                   index={i}
-                  isSaved={savedScholarshipIds.includes(scholarship.id)}
+                  isSaved={savedScholarshipsSet.has(scholarship.id)}
                   onToggleSave={() => handleToggleSave(scholarship.id)}
                 />
               ))}

@@ -11,7 +11,7 @@ import {
   Bookmark,
 } from 'lucide-react';
 import TiltCard from '@/components/shared/TiltCard';
-import { cn } from '@/lib/utils';
+import { cn, sanitizeUrl } from '@/lib/utils';
 import { formatRelativeDate, formatDate } from '@/lib/utils';
 import type { Scholarship } from '@/types';
 
@@ -210,7 +210,7 @@ export default function ScholarshipCard({
 
         {/* Apply button */}
         <a
-          href={scholarship.applicationLink || scholarship.applyLink}
+          href={sanitizeUrl(scholarship.applicationLink || scholarship.applyLink)}
           target="_blank"
           rel="noopener noreferrer"
           className={cn(

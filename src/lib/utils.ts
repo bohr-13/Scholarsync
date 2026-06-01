@@ -5,6 +5,24 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export function sanitizeUrl(url: string | undefined | null): string {
+  if (!url) return '#';
+  const trimmedUrl = url.trim();
+  try {
+    const parsedUrl = new URL(trimmedUrl);
+    if (parsedUrl.protocol === 'http:' || parsedUrl.protocol === 'https:') {
+      return trimmedUrl;
+    }
+  } catch {
+    // If it's a relative URL or invalid URL format, we'll try basic prefix check
+    const lowerUrl = trimmedUrl.toLowerCase();
+    if (lowerUrl.startsWith('http://') || lowerUrl.startsWith('https://')) {
+      return trimmedUrl;
+    }
+  }
+  return '#';
+}
+
 export function formatDate(date: string | Date): string {
   return new Intl.DateTimeFormat('en-IN', {
     day: 'numeric',

@@ -505,7 +505,7 @@ export default function ExtractionResult({
           Add to Dashboard
         </motion.button>
 
-        {/* ── Add to TODO button (enabled only when plan exists) ── */}
+        {/* ── Add to Todo button (enabled only when plan exists) ── */}
         {studyPlan && (
           <motion.button
             onClick={handleAddToTodo}

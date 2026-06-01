@@ -30,45 +30,7 @@ interface UseTodosReturn {
   reorderTasks: (listId: string, tasks: TodoTask[]) => Promise<void>;
 }
 
-export function useTodos(): UseTodosReturn {
-  const { user } = useAuth();
-  const [todoLists, setTodoLists] = useState<TodoList[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  // Subscribe to real-time TODO lists
-  useEffect(() => {
-    if (!user?.uid) {
-      setTodoLists([]);
-      setIsLoading(false);
-      return;
-    }
-
-    setIsLoading(true);
-    const unsubscribe = onTodoListsSnapshot(
-      user.uid,
-      (lists) => {
-        // Ensure tasks are sorted by order
-        const sortedLists = lists.map((list) => ({
-          ...list,
-          tasks: Array.isArray(list.tasks)
-            ? [...list.tasks].sort((a, b) => a.order - b.order)
-            : [],
-        }));
-        setTodoLists(sortedLists);
-        setIsLoading(false);
-        setError(null);
-      },
-      (err) => {
-        console.error('Todo list hook subscription failed:', err);
-        setError('Failed to sync TODO lists.');
-        setIsLoading(false);
-      }
-    );
-
-    return () => unsubscribe();
-  }, [user?.uid]);
-
+function useListOperations(user: any, setError: React.Dispatch<React.SetStateAction<string | null>>) {
   // Create a new TodoList
   const createList = useCallback(
     async (
@@ -110,7 +72,7 @@ export function useTodos(): UseTodosReturn {
         return null;
       }
     },
-    [user?.uid]
+    [user?.uid, setError]
   );
 
   // Update a TodoList directly (e.g. rename title or description)
@@ -124,7 +86,7 @@ export function useTodos(): UseTodosReturn {
         setError('Failed to update TODO list');
       }
     },
-    [user?.uid]
+    [user?.uid, setError]
   );
 
   // Delete a TodoList
@@ -138,9 +100,13 @@ export function useTodos(): UseTodosReturn {
         setError('Failed to delete TODO list');
       }
     },
-    [user?.uid]
+    [user?.uid, setError]
   );
 
+  return { createList, updateList, deleteList };
+}
+
+function useTaskOperations(user: any, todoLists: TodoList[], setError: React.Dispatch<React.SetStateAction<string | null>>) {
   // Add a task to an existing TodoList
   const addTask = useCallback(
     async (listId: string, text: string): Promise<void> => {
@@ -166,7 +132,7 @@ export function useTodos(): UseTodosReturn {
         setError('Failed to add task');
       }
     },
-    [user?.uid, todoLists]
+    [user?.uid, todoLists, setError]
   );
 
   // Update a specific task inside a TodoList
@@ -194,7 +160,7 @@ export function useTodos(): UseTodosReturn {
         setError('Failed to update task');
       }
     },
-    [user?.uid, todoLists]
+    [user?.uid, todoLists, setError]
   );
 
   // Delete a specific task inside a TodoList
@@ -216,7 +182,7 @@ export function useTodos(): UseTodosReturn {
         setError('Failed to delete task');
       }
     },
-    [user?.uid, todoLists]
+    [user?.uid, todoLists, setError]
   );
 
   // Toggle completion of a specific task
@@ -244,7 +210,7 @@ export function useTodos(): UseTodosReturn {
         setError('Failed to toggle task');
       }
     },
-    [user?.uid, todoLists]
+    [user?.uid, todoLists, setError]
   );
 
   // Reorder tasks inside a list (drag-and-drop integration)
@@ -265,8 +231,53 @@ export function useTodos(): UseTodosReturn {
         setError('Failed to save tasks order');
       }
     },
-    [user?.uid]
+    [user?.uid, setError]
   );
+
+  return { addTask, updateTask, deleteTask, toggleTaskComplete, reorderTasks };
+}
+
+export function useTodos(): UseTodosReturn {
+  const { user } = useAuth();
+  const [todoLists, setTodoLists] = useState<TodoList[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const { createList, updateList, deleteList } = useListOperations(user, setError);
+  const { addTask, updateTask, deleteTask, toggleTaskComplete, reorderTasks } = useTaskOperations(user, todoLists, setError);
+
+  // Subscribe to real-time TODO lists
+  useEffect(() => {
+    if (!user?.uid) {
+      setTodoLists([]);
+      setIsLoading(false);
+      return;
+    }
+
+    setIsLoading(true);
+    const unsubscribe = onTodoListsSnapshot(
+      user.uid,
+      (lists) => {
+        // Ensure tasks are sorted by order
+        const sortedLists = lists.map((list) => ({
+          ...list,
+          tasks: Array.isArray(list.tasks)
+            ? [...list.tasks].sort((a, b) => a.order - b.order)
+            : [],
+        }));
+        setTodoLists(sortedLists);
+        setIsLoading(false);
+        setError(null);
+      },
+      (err) => {
+        console.error('Todo list hook subscription failed:', err);
+        setError('Failed to sync TODO lists.');
+        setIsLoading(false);
+      }
+    );
+
+    return () => unsubscribe();
+  }, [user?.uid]);
 
   return {
     todoLists,

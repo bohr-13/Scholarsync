@@ -467,7 +467,7 @@ export async function seedUserData(
   await Promise.all(batch);
 }
 
-// ─── AI GENERATED TODO SYSTEM ───────────────────────────────────────
+// ─── AI GENERATED TODOLIST SYSTEM ───────────────────────────────────
 
 /** Helper to strip undefined values recursively from an object so it's Firestore-safe */
 function cleanFirestorePayload<T extends Record<string, any>>(obj: T): T {

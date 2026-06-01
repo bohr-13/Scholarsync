@@ -251,7 +251,7 @@ export default function ScanPage() {
 
   // Get user's last 3 uploaded notices
   const recentNotices = useMemo(() => {
-    return notices
+    return [...notices]
       .sort((a, b) => new Date(b.extractedAt).getTime() - new Date(a.extractedAt).getTime())
       .slice(0, 3);
   }, [notices]);

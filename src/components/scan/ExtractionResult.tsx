@@ -89,6 +89,18 @@ export default function ExtractionResult({
     }
   };
 
+  const urgentTasksCount = useMemo(() => {
+    const now = new Date();
+    const fiveDaysFromNow = new Date(now.getTime() + 5 * 24 * 60 * 60 * 1000);
+    return tasks.filter(task => {
+      if (task.status === 'completed') return false;
+      const taskDeadline = new Date(task.deadline);
+      return taskDeadline > now && taskDeadline <= fiveDaysFromNow;
+    }).length;
+  }, [tasks]);
+
+  const isOverloaded = useMemo(() => urgentTasksCount >= 3, [urgentTasksCount]);
+
   // Schedule Overload and Conflict Detection (Multi-notice Intelligence)
   const overloadInfo = useMemo(() => {
     if (!result.deadline) return null;
@@ -103,15 +115,6 @@ export default function ExtractionResult({
       return Math.abs(taskDeadline.getTime() - newDeadline.getTime()) <= timeWindow;
     });
 
-    // Find total urgent tasks due in the next 5 days
-    const fiveDaysFromNow = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000);
-    const urgentTasksCount = tasks.filter(task => {
-      if (task.status === 'completed') return false;
-      const taskDeadline = new Date(task.deadline);
-      return taskDeadline > new Date() && taskDeadline <= fiveDaysFromNow;
-    }).length;
-
-    const isOverloaded = urgentTasksCount >= 3;
     const hasConflict = conflictingTasks.length > 0;
 
     return {
@@ -120,7 +123,7 @@ export default function ExtractionResult({
       conflictingTasks,
       urgentTasksCount,
     };
-  }, [result.deadline, tasks]);
+  }, [result.deadline, tasks, isOverloaded, urgentTasksCount]);
 
   const toggleDoc = (index: number) => {
     setCheckedDocs((prev) => {

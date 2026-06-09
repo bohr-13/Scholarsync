@@ -163,7 +163,7 @@ export async function extractFromText(text: string): Promise<ExtractionResult> {
   try {
     const { GoogleGenerativeAI } = await import('@google/generative-ai');
     const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-3.1-flash-lite' });
 
     const result = await model.generateContent(`${EXTRACTION_PROMPT}\n\nNotice:\n${text}`);
     const response = result.response.text();
@@ -193,7 +193,7 @@ export async function extractFromImage(base64Image: string): Promise<ExtractionR
   try {
     const { GoogleGenerativeAI } = await import('@google/generative-ai');
     const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-3.1-flash-lite' });
 
     const cleanBase64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
 
@@ -232,7 +232,7 @@ export async function extractFromPdf(base64Pdf: string): Promise<ExtractionResul
   try {
     const { GoogleGenerativeAI } = await import('@google/generative-ai');
     const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-3.1-flash-lite' });
 
     const cleanBase64 = base64Pdf.replace(/^data:application\/pdf;base64,/, '');
 
@@ -369,7 +369,7 @@ export async function generateStudyPlan(
   try {
     const { GoogleGenerativeAI } = await import('@google/generative-ai');
     const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-3.1-flash-lite' });
 
     const prompt = `${STUDY_PLAN_PROMPT}\n\nNotice Details:\nTitle: ${title}\nSummary: ${summary}\nDeadline: ${deadline || 'None'}`;
     const result = await model.generateContent(prompt);

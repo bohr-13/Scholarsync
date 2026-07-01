@@ -68,7 +68,7 @@ ScholarSync is not another planner app. It's an **AI-native operating system** p
                                      │
                                      ▼
                           ┌─────────────────────────────┐
-                          │    🧠 Gemini 2.5 Flash AI    │
+                          │ 🧠 Gemini 3.1 FlashLite AI  │
                           │                             │
                           │  • Extract deadlines        │
                           │  • Detect urgency           │
@@ -209,7 +209,7 @@ This isn't a gimmick. It's an empathy-driven design decision that acknowledges *
 ├──────────────────────────────────────────────────────────────┤
 │                      INTELLIGENCE LAYER                      │
 │                                                              │
-│  Gemini 2.5 Flash API                                        │
+│  Gemini 3.1 FlashLite API                                    │
 │  ├─ 19-field notice extraction                               │
 │  ├─ Student-friendly language rewriting                      │
 │  ├─ 5-day study plan generation                              │
@@ -253,7 +253,7 @@ This isn't a gimmick. It's an empathy-driven design decision that acknowledges *
 | **Framework** | Next.js 16 (App Router) | Server components, streaming, file-based routing |
 | **UI** | React 19 | Concurrent features, `useTransition`, automatic batching |
 | **Language** | TypeScript 5 | Full type safety across 218-line type system |
-| **AI** | Gemini 2.5 Flash | Multimodal (image + PDF + text), fast inference, cost-efficient |
+| **AI** | Gemini 3.1 FlashLite | Multimodal (image + PDF + text), fast inference, cost-efficient |
 | **Database** | Cloud Firestore | Real-time listeners, offline persistence, user-scoped security |
 | **Auth** | Firebase Authentication | Google OAuth + Email/Password, zero-config session management |
 | **Styling** | Tailwind CSS 4 | Utility-first, dark mode, responsive, glassmorphism utilities |

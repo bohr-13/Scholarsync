@@ -17,7 +17,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Next.js-16.2-000000?style=flat-square&logo=nextdotjs&logoColor=white" alt="Next.js" />
   <img src="https://img.shields.io/badge/React-19.2-61DAFB?style=flat-square&logo=react&logoColor=white" alt="React 19" />
-  <img src="https://img.shields.io/badge/Gemini_AI-3.1_Flash-lite-4285F4?style=flat-square&logo=googlegemini&logoColor=white" alt="Gemini AI" />
+  <img src="https://img.shields.io/badge/Gemini_AI-3.1_Flash_lite-4285F4?style=flat-square&logo=googlegemini&logoColor=white" alt="Gemini AI" />
   <img src="https://img.shields.io/badge/Firebase-12.13-DD2C00?style=flat-square&logo=firebase&logoColor=white" alt="Firebase" />
   <img src="https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript" />
   <img src="https://img.shields.io/badge/Tailwind-4.x-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind" />

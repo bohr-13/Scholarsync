@@ -1,0 +1,27 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ═══════════════════════════════════════════════════════════════
+    //  USER-SCOPED DATA
+    //  Each user can ONLY read/write documents under their own UID.
+    //  This covers: tasks, attendance, scannedNotices,
+    //  savedScholarships, todos, settings (gpa), and user profile.
+    // ═══════════════════════════════════════════════════════════════
+    match /users/{userId}/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    //  GLOBAL SCHOLARSHIPS
+    //  Authenticated users can read the public scholarship catalog.
+    //  Writes are blocked from client-side SDK — seed via Admin SDK.
+    // ═══════════════════════════════════════════════════════════════
+    match /scholarships/{scholarshipId} {
+      allow read: if request.auth != null;
+      allow create, update, delete: if false;
+    }
+
+  }
+}

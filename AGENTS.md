@@ -8,7 +8,7 @@ Helps manage academic notices, deadlines, attendance, and scholarships.
 - Next.js 16 (App Router), React 19, TypeScript 5
 - Firebase Auth + Firestore
 - Tailwind CSS 4, Framer Motion
-- Gemini 2.5 Flash (AI engine)
+- Gemini 3.6 Flash (AI engine)
 
 ## Key Files
 - `src/lib/gemini.ts` — AI integration logic
